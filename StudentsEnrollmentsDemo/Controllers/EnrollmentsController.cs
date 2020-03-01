@@ -13,43 +13,43 @@ using StudentsEnrollmentsDemo.Models;
 
 namespace StudentsEnrollmentsDemo.Controllers
 {
-    [RoutePrefix("api/students")]
-    public class StudentsController : ApiController
+    [RoutePrefix("api/enrollments")]
+    public class EnrollmentsController : ApiController
     {
         private StudentsEnrollmentsDemoContext db = new StudentsEnrollmentsDemoContext();
 
         [HttpGet]
-        [Route("get-student")]
-        public async Task<IHttpActionResult> GetStudent(int id)
+        [Route("get-enrollment")]
+        public async Task<IHttpActionResult> GetEnrollment(int id)
         {
-            Student student = await db.Students.Include(s => s.Enrollments).FirstOrDefaultAsync(s => s.StudentID == id);
-            if (student == null)
+            Enrollment enrollment = await db.Enrollments.FindAsync(id);
+            if (enrollment == null)
             {
                 return NotFound();
             }
 
-            return Ok(student);
+            return Ok(enrollment);
         }
 
         [HttpGet]
-        [Route("all-students")]
-        public async Task<IHttpActionResult> GetAllStudents()
+        [Route("all-enrollments")]
+        public async Task<IHttpActionResult> GetAllEnrollments()
         {
-            List<Student> lst = await db.Students.Include(s => s.Enrollments).ToListAsync();
+            List<Enrollment> lst = await db.Enrollments.ToListAsync();
 
             return Json(lst);
         }
 
         [HttpPost]
-        [Route("update-student")]
-        public async Task<IHttpActionResult> UpdateStudent(Student student)
+        [Route("update-enrollment")]
+        public async Task<IHttpActionResult> UpdateEnrollment(Enrollment enrollment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Entry(student).State = EntityState.Modified;
+            db.Entry(enrollment).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +58,7 @@ namespace StudentsEnrollmentsDemo.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StudentExists(student.StudentID))
+                if (!EnrollmentExists(enrollment.EnrollmentID))
                 {
                     return NotFound();
                 }
@@ -71,34 +71,34 @@ namespace StudentsEnrollmentsDemo.Controllers
         }
 
         [HttpPost]
-        [Route("add-student")]
-        public async Task<IHttpActionResult> AddStudent(Student student)
+        [Route("add-enrollment")]
+        public async Task<IHttpActionResult> AddEnrollment(Enrollment enrollment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Students.Add(student);
+            db.Enrollments.Add(enrollment);
             await db.SaveChangesAsync();
 
-            return Ok(student);
+            return Ok(enrollment);
         }
 
         [HttpGet]
-        [Route("delete-student")]
-        public async Task<IHttpActionResult> DeleteStudent(int id)
+        [Route("delete-enrollment")]
+        public async Task<IHttpActionResult> DeleteEnrollment(int id)
         {
-            Student student = await db.Students.FindAsync(id);
-            if (student == null)
+            Enrollment enrollment = await db.Enrollments.FindAsync(id);
+            if (enrollment == null)
             {
                 return NotFound();
             }
 
-            db.Students.Remove(student);
+            db.Enrollments.Remove(enrollment);
             await db.SaveChangesAsync();
 
-            return Ok(student);
+            return Ok(enrollment);
         }
 
         protected override void Dispose(bool disposing)
@@ -110,9 +110,9 @@ namespace StudentsEnrollmentsDemo.Controllers
             base.Dispose(disposing);
         }
 
-        private bool StudentExists(int id)
+        private bool EnrollmentExists(int id)
         {
-            return db.Students.Count(e => e.StudentID == id) > 0;
+            return db.Enrollments.Count(e => e.EnrollmentID == id) > 0;
         }
     }
 }

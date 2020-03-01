@@ -20,5 +20,7 @@ namespace StudentsEnrollmentsDemo.Models
         }
 
         public System.Data.Entity.DbSet<StudentsEnrollmentsDemo.Models.Student> Students { get; set; }
+
+        public System.Data.Entity.DbSet<StudentsEnrollmentsDemo.Models.Enrollment> Enrollments { get; set; }
     }
 }
