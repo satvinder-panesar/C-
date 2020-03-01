@@ -13,21 +13,17 @@ using StudentsEnrollmentsDemo.Models;
 
 namespace StudentsEnrollmentsDemo.Controllers
 {
+    [RoutePrefix("api/students")]
     public class StudentsController : ApiController
     {
         private StudentsEnrollmentsDemoContext db = new StudentsEnrollmentsDemoContext();
 
-        // GET: api/Students
-        public IQueryable<Student> GetStudents()
-        {
-            return db.Students;
-        }
-
         // GET: api/Students/5
-        [ResponseType(typeof(Student))]
+        [HttpGet]
+        [Route("get-student")]
         public async Task<IHttpActionResult> GetStudent(int id)
         {
-            Student student = await db.Students.FindAsync(id);
+            Student student = await db.Students.Include(s => s.Enrollments).FirstOrDefaultAsync(s => s.StudentID == id);
             if (student == null)
             {
                 return NotFound();
@@ -36,18 +32,23 @@ namespace StudentsEnrollmentsDemo.Controllers
             return Ok(student);
         }
 
+        [HttpGet]
+        [Route("all-students")]
+        public async Task<IHttpActionResult> GetAllStudents()
+        {
+            List<Student> lst = await db.Students.Include(s => s.Enrollments).ToListAsync();
+
+            return Json(lst);
+        }
+
         // PUT: api/Students/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutStudent(int id, Student student)
+        [HttpPost]
+        [Route("update-student")]
+        public async Task<IHttpActionResult> UpdateStudent(Student student)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            if (id != student.StudentID)
-            {
-                return BadRequest();
             }
 
             db.Entry(student).State = EntityState.Modified;
@@ -55,10 +56,11 @@ namespace StudentsEnrollmentsDemo.Controllers
             try
             {
                 await db.SaveChangesAsync();
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!StudentExists(id))
+                if (!StudentExists(student.StudentID))
                 {
                     return NotFound();
                 }
@@ -68,12 +70,12 @@ namespace StudentsEnrollmentsDemo.Controllers
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Students
-        [ResponseType(typeof(Student))]
-        public async Task<IHttpActionResult> PostStudent(Student student)
+        [HttpPost]
+        [Route("add-student")]
+        public async Task<IHttpActionResult> AddStudent(Student student)
         {
             if (!ModelState.IsValid)
             {
@@ -83,11 +85,12 @@ namespace StudentsEnrollmentsDemo.Controllers
             db.Students.Add(student);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = student.StudentID }, student);
+            return Ok(student);
         }
 
         // DELETE: api/Students/5
-        [ResponseType(typeof(Student))]
+        [HttpGet]
+        [Route("delete-student")]
         public async Task<IHttpActionResult> DeleteStudent(int id)
         {
             Student student = await db.Students.FindAsync(id);
