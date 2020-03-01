@@ -7,7 +7,10 @@ namespace StudentsEnrollmentsDemo.Models
 {
     public enum Grade
     {
-        A, B, C, D
+        A = 1,
+        B = 2,
+        C = 3,
+        D = 4
     }
     public class Enrollment
     {
