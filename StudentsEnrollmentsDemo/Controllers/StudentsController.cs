@@ -9,7 +9,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper;
 using StudentsEnrollmentsDemo.Models;
+using StudentsEnrollmentsDemo.Models.DTOs;
 
 namespace StudentsEnrollmentsDemo.Controllers
 {
@@ -28,7 +30,7 @@ namespace StudentsEnrollmentsDemo.Controllers
                 return NotFound();
             }
 
-            return Ok(student);
+            return Ok(Mapper.Map<StudentDto>(student));
         }
 
         [HttpGet]
@@ -37,7 +39,7 @@ namespace StudentsEnrollmentsDemo.Controllers
         {
             List<Student> lst = await db.Students.Include(s => s.Enrollments).ToListAsync();
 
-            return Json(lst);
+            return Json(Mapper.Map<List<StudentDto>>(lst));
         }
 
         [HttpPost]
@@ -98,7 +100,7 @@ namespace StudentsEnrollmentsDemo.Controllers
             db.Students.Remove(student);
             await db.SaveChangesAsync();
 
-            return Ok(student);
+            return Ok(Mapper.Map<StudentDto>(student));
         }
 
         protected override void Dispose(bool disposing)
