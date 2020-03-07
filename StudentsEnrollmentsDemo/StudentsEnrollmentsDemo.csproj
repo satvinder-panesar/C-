@@ -182,6 +182,8 @@
     <Compile Include="Models\DTOs\EnrollmentDto.cs" />
     <Compile Include="Models\DTOs\StudentDto.cs" />
     <Compile Include="Models\Enrollment.cs" />
+    <Compile Include="Models\RequestCriterias\AddStudent.cs" />
+    <Compile Include="Models\RequestCriterias\UpdateStudent.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\StudentsEnrollmentsDemoContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

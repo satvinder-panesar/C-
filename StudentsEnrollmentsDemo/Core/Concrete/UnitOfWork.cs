@@ -19,6 +19,11 @@ namespace StudentsEnrollmentsDemo.Core.Concrete
         }
         public IStudentRepository Students { get; private set; }
 
+        public void Dispose()
+        {
+            dbContext.Dispose();
+        }
+
         public async Task<int> Save()
         {
             return await dbContext.SaveChangesAsync();

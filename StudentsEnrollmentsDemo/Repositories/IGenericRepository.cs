@@ -10,9 +10,9 @@ namespace StudentsEnrollmentsDemo.Repositories
     public interface IGenericRepository<T> where T:class
     {
         Task<List<T>> GetByPredicate(Expression<Func<T, bool>> predicate, string[] includes);
-        Task<T> GetById(object id);
+        Task<T> GetById(int id);
         void Insert(T obj);
         void Update(T obj);
-        void Delete(object id);
+        void Delete(int id);
     }
 }

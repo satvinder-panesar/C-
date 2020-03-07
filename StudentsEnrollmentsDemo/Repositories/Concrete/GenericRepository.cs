@@ -19,13 +19,13 @@ namespace StudentsEnrollmentsDemo.Repositories.Concrete
             table = dBContext.Set<T>();
         }
 
-        public async void Delete(object id)
+        public async void Delete(int id)
         {
             T existing = await table.FindAsync(id);
             table.Remove(existing);
         }
 
-        public async Task<T> GetById(object id)
+        public async Task<T> GetById(int id)
         {
             return await table.FindAsync(id);
         }
@@ -37,7 +37,7 @@ namespace StudentsEnrollmentsDemo.Repositories.Concrete
             {
                 query = query.Where(predicate);
             }
-            if(includes.Length > 0)
+            if(includes != null && includes.Length > 0)
             {
                 foreach(var include in includes)
                 {
@@ -54,7 +54,6 @@ namespace StudentsEnrollmentsDemo.Repositories.Concrete
 
         public void Update(T obj)
         {
-            table.Attach(obj);
             dBContext.Entry(obj).State = EntityState.Modified;
         }
     }

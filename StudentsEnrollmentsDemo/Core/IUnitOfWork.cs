@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StudentsEnrollmentsDemo.Core
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IStudentRepository Students { get; }
         Task<int> Save();

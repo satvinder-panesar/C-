@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace StudentsEnrollmentsDemo.Models.DTOs
+namespace StudentsEnrollmentsDemo.Models.RequestCriterias
 {
-    public class StudentDto
+    public class UpdateStudent
     {
         public int StudentID { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public DateTime EnrollmentDate { get; set; }
-        public ICollection<EnrollmentDto> Enrollments { get; set; }
     }
 }

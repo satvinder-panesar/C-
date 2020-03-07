@@ -10,21 +10,24 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using StudentsEnrollmentsDemo.Core;
+using StudentsEnrollmentsDemo.Core.Concrete;
 using StudentsEnrollmentsDemo.Models;
 using StudentsEnrollmentsDemo.Models.DTOs;
+using StudentsEnrollmentsDemo.Models.RequestCriterias;
 
 namespace StudentsEnrollmentsDemo.Controllers
 {
     [RoutePrefix("api/students")]
     public class StudentsController : ApiController
     {
-        private StudentsEnrollmentsDemoContext db = new StudentsEnrollmentsDemoContext();
+        private IUnitOfWork unitOfWork = new UnitOfWork(new StudentsEnrollmentsDemoContext());
 
         [HttpGet]
         [Route("get-student")]
         public async Task<IHttpActionResult> GetStudent(int id)
         {
-            Student student = await db.Students.Include(s => s.Enrollments).FirstOrDefaultAsync(s => s.StudentID == id);
+            Student student = await unitOfWork.Students.GetById(id);
             if (student == null)
             {
                 return NotFound();
@@ -37,84 +40,64 @@ namespace StudentsEnrollmentsDemo.Controllers
         [Route("all-students")]
         public async Task<IHttpActionResult> GetAllStudents()
         {
-            List<Student> lst = await db.Students.Include(s => s.Enrollments).ToListAsync();
+            List<Student> lst = await unitOfWork.Students.GetByPredicate(s => s.StudentID > -1, new string[1] { "Enrollments" });
 
             return Json(Mapper.Map<List<StudentDto>>(lst));
         }
 
         [HttpPost]
         [Route("update-student")]
-        public async Task<IHttpActionResult> UpdateStudent(Student student)
+        public async Task<IHttpActionResult> UpdateStudent(UpdateStudent student)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Entry(student).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-                return Ok();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StudentExists(student.StudentID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            unitOfWork.Students.Update(Mapper.Map<Student>(student));
+            await unitOfWork.Save();
+            return Ok();
         }
 
         [HttpPost]
         [Route("add-student")]
-        public async Task<IHttpActionResult> AddStudent(Student student)
+        public async Task<IHttpActionResult> AddStudent(AddStudent student)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Students.Add(student);
-            await db.SaveChangesAsync();
+            unitOfWork.Students.Insert(Mapper.Map<Student>(student));
+            await unitOfWork.Save();
 
-            return Ok(student);
+            return Ok();
         }
 
         [HttpGet]
         [Route("delete-student")]
         public async Task<IHttpActionResult> DeleteStudent(int id)
         {
-            Student student = await db.Students.FindAsync(id);
-            if (student == null)
+            Student existing = await unitOfWork.Students.GetById(id);
+            if (existing == null)
             {
                 return NotFound();
             }
 
-            db.Students.Remove(student);
-            await db.SaveChangesAsync();
+            unitOfWork.Students.Delete(id);
+            await unitOfWork.Save();
 
-            return Ok(Mapper.Map<StudentDto>(student));
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.Dispose();
             }
             base.Dispose(disposing);
         }
 
-        private bool StudentExists(int id)
-        {
-            return db.Students.Count(e => e.StudentID == id) > 0;
-        }
     }
 }
