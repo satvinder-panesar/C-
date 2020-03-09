@@ -10,7 +10,7 @@ namespace StudentsEnrollmentsDemo.Repositories
     public interface IGenericRepository<T> where T:class
     {
         Task<List<T>> GetByPredicate(Expression<Func<T, bool>> predicate, string[] includes);
-        Task<T> GetById(int id);
+        Task<T> GetById(int id, Expression<Func<T, bool>> predicate, string[] includes);
         void Insert(T obj);
         void Update(T obj);
         void Delete(int id);

@@ -15,6 +15,7 @@ namespace StudentsEnrollmentsDemo.Models
             CreateMap<Student, StudentDto>();
             CreateMap<AddStudent, Student>();
             CreateMap<UpdateStudent, Student>();
+            CreateMap<AddEnrollment, Enrollment>();
         }
     }
 }

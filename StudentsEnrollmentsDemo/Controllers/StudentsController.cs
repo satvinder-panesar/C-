@@ -27,7 +27,7 @@ namespace StudentsEnrollmentsDemo.Controllers
         [Route("get-student")]
         public async Task<IHttpActionResult> GetStudent(int id)
         {
-            Student student = await unitOfWork.Students.GetById(id);
+            Student student = await unitOfWork.Students.GetById(id, s => s.StudentID == id, new string[1] { "Enrollments" });
             if (student == null)
             {
                 return NotFound();
@@ -78,7 +78,7 @@ namespace StudentsEnrollmentsDemo.Controllers
         [Route("delete-student")]
         public async Task<IHttpActionResult> DeleteStudent(int id)
         {
-            Student existing = await unitOfWork.Students.GetById(id);
+            Student existing = await unitOfWork.Students.GetById(id, null, null);
             if (existing == null)
             {
                 return NotFound();

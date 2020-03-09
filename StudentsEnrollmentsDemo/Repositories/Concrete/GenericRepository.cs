@@ -25,9 +25,22 @@ namespace StudentsEnrollmentsDemo.Repositories.Concrete
             table.Remove(existing);
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(int id, Expression<Func<T, bool>> predicate, string[] includes)
         {
-            return await table.FindAsync(id);
+            if(includes != null && includes.Length > 0)
+            {
+                IQueryable<T> query = table;
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+                return await query.SingleOrDefaultAsync(predicate);
+            }
+            else
+            {
+                return await table.FindAsync(id);
+            }
+            
         }
 
         public async Task<List<T>> GetByPredicate(Expression<Func<T, bool>> predicate, string[] includes)

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using StudentsEnrollmentsDemo.Repositories;
 using StudentsEnrollmentsDemo.Repositories.Concrete;
 
 namespace StudentsEnrollmentsDemo.Core.Concrete
@@ -16,8 +17,10 @@ namespace StudentsEnrollmentsDemo.Core.Concrete
         {
             dbContext = dbc;
             Students = new StudentRepository(dbc);
+            Enrollments = new EnrollmentRepository(dbc);
         }
         public IStudentRepository Students { get; private set; }
+        public IEnrollmentRepository Enrollments { get; private set; }
 
         public void Dispose()
         {

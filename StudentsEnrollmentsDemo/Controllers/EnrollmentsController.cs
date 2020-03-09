@@ -9,20 +9,24 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper;
+using StudentsEnrollmentsDemo.Core;
+using StudentsEnrollmentsDemo.Core.Concrete;
 using StudentsEnrollmentsDemo.Models;
+using StudentsEnrollmentsDemo.Models.RequestCriterias;
 
 namespace StudentsEnrollmentsDemo.Controllers
 {
     [RoutePrefix("api/enrollments")]
     public class EnrollmentsController : ApiController
     {
-        private StudentsEnrollmentsDemoContext db = new StudentsEnrollmentsDemoContext();
+        private IUnitOfWork unitOfWork = new UnitOfWork(new StudentsEnrollmentsDemoContext());
 
         [HttpGet]
         [Route("get-enrollment")]
         public async Task<IHttpActionResult> GetEnrollment(int id)
         {
-            Enrollment enrollment = await db.Enrollments.FindAsync(id);
+            Enrollment enrollment = await unitOfWork.Enrollments.GetById(id, null, null);
             if (enrollment == null)
             {
                 return NotFound();
@@ -35,7 +39,7 @@ namespace StudentsEnrollmentsDemo.Controllers
         [Route("all-enrollments")]
         public async Task<IHttpActionResult> GetAllEnrollments()
         {
-            List<Enrollment> lst = await db.Enrollments.ToListAsync();
+            List<Enrollment> lst = await unitOfWork.Enrollments.GetByPredicate(null, null);
 
             return Json(lst);
         }
@@ -49,70 +53,50 @@ namespace StudentsEnrollmentsDemo.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Entry(enrollment).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-                return Ok();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EnrollmentExists(enrollment.EnrollmentID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            unitOfWork.Enrollments.Update(enrollment);
+            await unitOfWork.Save();
+            return Ok();
 
         }
 
         [HttpPost]
         [Route("add-enrollment")]
-        public async Task<IHttpActionResult> AddEnrollment(Enrollment enrollment)
+        public async Task<IHttpActionResult> AddEnrollment(AddEnrollment enrollment)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Enrollments.Add(enrollment);
-            await db.SaveChangesAsync();
+            unitOfWork.Enrollments.Insert(Mapper.Map<Enrollment>(enrollment));
+            await unitOfWork.Save();
 
-            return Ok(enrollment);
+            return Ok();
         }
 
         [HttpGet]
         [Route("delete-enrollment")]
         public async Task<IHttpActionResult> DeleteEnrollment(int id)
         {
-            Enrollment enrollment = await db.Enrollments.FindAsync(id);
-            if (enrollment == null)
+            Enrollment existing = await unitOfWork.Enrollments.GetById(id, null, null);
+            if (existing == null)
             {
                 return NotFound();
             }
 
-            db.Enrollments.Remove(enrollment);
-            await db.SaveChangesAsync();
+            unitOfWork.Enrollments.Delete(id);
+            await unitOfWork.Save();
 
-            return Ok(enrollment);
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool EnrollmentExists(int id)
-        {
-            return db.Enrollments.Count(e => e.EnrollmentID == id) > 0;
         }
     }
 }
