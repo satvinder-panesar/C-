@@ -29,6 +29,8 @@ namespace StudentsEnrollmentsDemo
             config.Formatters.Add(GlobalConfiguration.Configuration.Formatters.JsonFormatter);
 
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+
+            config.Services.Replace(typeof(IExceptionLogger), new GlobalExceptionLogger());
         }
     }
 }

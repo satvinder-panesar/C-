@@ -33,7 +33,7 @@ namespace StudentsEnrollmentsDemo.Handlers
 
         public virtual void HandleCore(ExceptionHandlerContext context)
         {
-            System.Diagnostics.Debug.Print("Can send message to App Insights here");
+            System.Diagnostics.Debug.Print("Exception Handler ========> Can send message to App Insights here");
         }
     }
 }
