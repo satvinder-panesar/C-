@@ -184,6 +184,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\GlobalExceptionHandler.cs" />
     <Compile Include="Models\AutoMapperProfile.cs" />
     <Compile Include="Models\DTOs\EnrollmentDto.cs" />
     <Compile Include="Models\DTOs\StudentDto.cs" />
