@@ -186,6 +186,7 @@
     </Compile>
     <Compile Include="Handlers\GlobalExceptionHandler.cs" />
     <Compile Include="Handlers\GlobalExceptionLogger.cs" />
+    <Compile Include="Handlers\ReqResHandler.cs" />
     <Compile Include="Models\AutoMapperProfile.cs" />
     <Compile Include="Models\DTOs\EnrollmentDto.cs" />
     <Compile Include="Models\DTOs\StudentDto.cs" />

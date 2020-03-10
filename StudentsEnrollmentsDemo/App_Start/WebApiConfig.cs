@@ -31,6 +31,8 @@ namespace StudentsEnrollmentsDemo
             config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
 
             config.Services.Replace(typeof(IExceptionLogger), new GlobalExceptionLogger());
+
+            config.MessageHandlers.Add(new ReqResHandler());
         }
     }
 }
