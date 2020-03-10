@@ -15,7 +15,14 @@ namespace StudentsEnrollmentsDemo.Handlers
     {
         public virtual Task HandleAsync(ExceptionHandlerContext context, CancellationToken cancellationToken)
         {
-            return HandleAsyncCore(context, cancellationToken);
+            if (context.ExceptionContext.CatchBlock.IsTopLevel)
+            {
+                return HandleAsyncCore(context, cancellationToken);
+            }
+            else
+            {
+                return Task.FromResult(0);
+            }
         }
 
         public virtual Task HandleAsyncCore(ExceptionHandlerContext context, CancellationToken cancellationToken)

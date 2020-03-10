@@ -44,8 +44,6 @@ namespace StudentsEnrollmentsDemo.Controllers
         {
             List<Student> lst = await unitOfWork.Students.GetByPredicate(s => s.StudentID > -1, new string[1] { "Enrollments" });
 
-            throw new Exception();
-
             return Json(Mapper.Map<List<StudentDto>>(lst));
         }
 
